@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(115200);
 
 
-  // Khởi tạo tên (Tên này sẽ được nhét vào gói phụ)
+  // Khởi tạo tên(Tên này sẽ được nhét vào gói phụ)
   BLEDevice::init("ESP32_Lock");
 
 
@@ -53,7 +53,7 @@ void setup() {
   BLEDevice::startAdvertising();
 
 
-  Serial.println("Đã fix lỗi 31-byte! Gói tin chuẩn đang được phát...");
+  Serial.println("Đã fix lỗi 31-byte! Gói tin chuẩn đang được phát......");
 }
 
 
