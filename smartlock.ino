@@ -621,11 +621,20 @@ void handleHall() {
     if (doorState == DOOR_WAITING_FOR_OPEN) {
         if (!magnetClose) {
             doorState = DOOR_PHYSICALLY_OPEN;
+
+            Serial.printf("[%lu][HALL] Cua mo! authed=%d pUnlockChar=%s\n",
+            millis(), countAuthenticatedClients(),
+            pUnlockChar != NULL ? "OK" : "NULL");
+
             if (pUnlockChar != NULL && countAuthenticatedClients() > 0) {
                 String msg = "OPENED:" + unlockMethod;
                 pUnlockChar->setValue(msg.c_str());
                 pUnlockChar->notify();
+                Serial.printf("[%lu][HALL] Da notify: %s\n", millis(), msg.c_str());
             }
+            else {
+            Serial.printf("[%lu][HALL] SKIP notify - khong co client auth\n", millis());
+        }
             lcd.clear();
             lcd.setCursor(0,0); lcd.print("Door is OPEN");
             lcd.setCursor(0,1); lcd.print("Welcome!");
@@ -806,7 +815,9 @@ void loop() {
     }
     static unsigned long lastPoll = 0;
     // Gửi log khi BLE rảnh
-    if (hasPendingLog && countActiveClients() == 0 && doorState == DOOR_IDLE) {
+    //if (hasPendingLog && countActiveClients() == 0 && doorState == DOOR_IDLE) {
+    if (hasPendingLog && countActiveClients() == 0 ) {
+
         hasPendingLog = false;
         Serial.println("[FB] BLE ranh -> gui log");
         postUnlockLog(pendingLogMethod, pendingLogMac);
