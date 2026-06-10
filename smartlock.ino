@@ -16,8 +16,8 @@
 
 using namespace std;   // ← THÊM DÒNG NÀY
 /* ================= WIFI ================= */
-const char* ssid = "TOTOLINK_EX200";
-const char* password = "kheckhec";
+const char* ssid = "Hi";
+const char* password = "12345678";
 
 /* ================= FIREBASE ================= */
 //const char* FIREBASE_HOST = "https://learn-prj-f5d0d-default-rtdb.firebaseio.com";
@@ -806,6 +806,7 @@ void setup() {
 
 /* ================= LOOP ================= */
 void loop() {
+    static bool waitFaceShown = false;
     static unsigned long lastHeap = 0;
     if (millis() - lastHeap > 5000) {
         lastHeap = millis();
@@ -893,7 +894,6 @@ void loop() {
     else if (faceEnabled) {
         // Case ON/ON — GIỮ cờ, đợi Face block
         // Chỉ in log + LCD 1 lần, không delay
-        static bool waitFaceShown = false;
         if (!waitFaceShown) {
             Serial.printf("[%lu][UNLOCK] Face dang bat -> giu co, doi Face\n", millis());
             lcd.clear();
@@ -902,11 +902,12 @@ void loop() {
             waitFaceShown = true;
         }
         // Khi cờ tắt (Face xử lý xong) → reset waitFaceShown ở chỗ khác
-        if (!unlockPending) waitFaceShown = false;
+        //if (!unlockPending) waitFaceShown = false;
     }
     else {
         // Case OFF/ON — Face tắt, BLE bật → mở luôn
         unlockPending = false;        // ← tắt cờ, đã xử lý
+        sendEventToPi('5');      // BLE-only unlock
         Serial.printf("[%lu][LOOP] Sap goi openDoorSequence\n", millis());
         openDoorSequence("Phone BLE");
     }
@@ -948,6 +949,7 @@ void loop() {
             if (bleEnabled) {
                 if (unlockPending) {
                     unlockPending = false;
+                    waitFaceShown = false;   // ← reset ở đây mới đúng
                     sendEventToPi('3');      // <-- thêm ở đây
 
                     Serial.printf("[%lu][FACE] Pass! Co lenh unlock + Face OK -> MO CUA\n", millis());
